@@ -38,5 +38,27 @@ public class FIOHourly {
 	public int hours(){
 		return this.hourly == null ? -1 : this.hourly.datablockSize();
 	}
+	
+	/**
+	 * Returns the top-level summary for the data block. This 
+	 * is not tied to a specific hour, but provides
+	 * a human-readable overview of the next 48-hours.
+	 * 
+	 * @return the top-level daily summary
+	 */
+	public String getSummary(){
+		return this.hourly.summary() == null ? null : this.hourly.summary();
+		
+	}
+	
+	/**
+	 * Returns the top-level icon for the data block. This is not
+	 * tied to a specific hour, but for the entire 48-hour period.
+	 * 
+	 * @return the name of the icon for the hourly forecast
+	 */
+	public String getIcon(){
+		return this.hourly.icon() == null ? null : this.hourly.icon();
+	}
 
 }

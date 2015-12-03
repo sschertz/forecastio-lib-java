@@ -38,5 +38,28 @@ public class FIOMinutely {
 	public int minutes(){
 		return this.minutely == null ? -1 : this.minutely.datablockSize();
 	}
+	
+	/**
+	 * Returns the top-level summary for the data block. This summary
+	 * is not tied to a specific minute, but instead provides 
+	 * a human-readable overview of the next hour.
+	 * 
+	 * @return the top-level minutely summary
+	 */
+	public String getSummary(){
+		return this.minutely.summary() == null ? null : this.minutely.summary();
+		
+	}
+	
+	/**
+	 * Returns the top-level icon for the data block. This is not
+	 * tied to a specific minute, but for the entire hour.
+	 * 
+	 * @return the name of the icon for the minutely forecast
+	 */
+	public String getIcon(){
+		return this.minutely.icon() == null ? null : this.minutely.icon();
+	}
+
 
 }

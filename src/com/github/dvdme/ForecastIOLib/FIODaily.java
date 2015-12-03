@@ -39,5 +39,27 @@ public class FIODaily {
 	public int days(){
 		return this.daily == null ? -1 : this.daily.datablockSize();
 	}
+	
+	/**
+	 * Returns the top-level summary for the data block. This summary
+	 * is not tied to any particular day. This usually provides
+	 * a human-readable overview of the next several days.
+	 * 
+	 * @return the top-level daily summary
+	 */
+	public String getSummary(){
+		return this.daily.summary() == null ? null : this.daily.summary();
+		
+	}
+	
+	/**
+	 * Returns the top-level icon for the data block. This is not
+	 * tied to a specific day, but for the entire 7-day forecast.
+	 * 
+	 * @return the name of the icon for the daily forecast
+	 */
+	public String getIcon(){
+		return this.daily.icon() == null ? null : this.daily.icon();
+	}
 
 }
