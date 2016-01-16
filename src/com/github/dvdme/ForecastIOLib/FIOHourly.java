@@ -44,7 +44,7 @@ public class FIOHourly {
 	 * is not tied to a specific hour, but provides
 	 * a human-readable overview of the next 48-hours.
 	 * 
-	 * @return the top-level daily summary
+	 * @return the top-level hourly summary
 	 */
 	public String getSummary(){
 		return this.hourly.summary() == null ? null : this.hourly.summary();
@@ -59,6 +59,25 @@ public class FIOHourly {
 	 */
 	public String getIcon(){
 		return this.hourly.icon() == null ? null : this.hourly.icon();
+	}
+	
+	/**
+	 * Returns the data block this hourly forecast. This is useful if
+	 * your code needs to do common operations on the Daily, Hourly,
+	 * or Minutely data blocks, so you need a more generic version.
+	 * (For example, you want to find out when it will rain next,
+	 * so you need to loop through minutely, hourly, and daily
+	 * and stop when you find the first result with rain. You
+	 * can use the same loop to check all three forecasts
+	 * using FIODataBlock).
+	 * 
+	 * Use caution when accessing data in an FIODataBlock, as the 
+	 * available properties vary depending on the type of forecast
+	 * used to generate the block.
+	 * @return
+	 */
+	public FIODataBlock getDataBlock(){
+		return this.hourly == null ? null : this.hourly;
 	}
 
 }

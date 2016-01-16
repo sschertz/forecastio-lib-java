@@ -61,5 +61,24 @@ public class FIODaily {
 	public String getIcon(){
 		return this.daily.icon() == null ? null : this.daily.icon();
 	}
+	
+	/**
+	 * Returns the FIODataBlock for this daily forecast. This is useful if
+	 * your code needs to do common operations on the Daily, Hourly,
+	 * or Minutely data blocks, so you need a more generic version.
+	 * (For example, you want to find out when it will rain next,
+	 * so you need to loop through minutely, hourly, and daily
+	 * and stop when you find the first result with rain. You
+	 * can use the same loop to check all three forecasts
+	 * using FIODataBlock).
+	 * 
+	 * Use caution when accessing data in an FIODataBlock, as the 
+	 * available properties vary depending on the type of forecast
+	 * used to generate the block.
+	 * @return
+	 */
+	public FIODataBlock getDataBlock(){
+		return this.daily == null ? null : this.daily;
+	}
 
 }
