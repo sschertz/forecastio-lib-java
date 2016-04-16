@@ -5,3 +5,6 @@ target/
 .classpath
 .settings/
 .idea
+.bash_profile
+.DS_Store
+*.iml
