@@ -17,7 +17,11 @@ There should be no trouble running this anywhere as long as there is Java suppor
 	<version>LATEST</version>
 </dependency>
 ```
-* Versions 1.5.1 ,1.5.2 and 1.5.3 are on maven. I recommend using the latest.
+* Versions 1.5.1 to 1.5.5 are on maven. Avoid using 1.5.3  and 1.5.4 because it was having issues building on graddle because of a not so well made jar file. I recommend using the latest.
+* If anyone wants to check the auto generated javadocs they are here: [forecastiolib.dme.ninja](http://forecastiolib.dme.ninja)
+
+####Update (16-01-2016):
+* Added proxy support
 
 ####Update (12-03-2015):
 * Bug fix: No longer crashes with half hour timezones.
@@ -148,6 +152,13 @@ fio.getForecast(response);
 fio.getForecast(JsonObject.readFrom(response));
 ```
 
+If a proxy has to be used:
+```java
+ForecastIO fio = new ForecastIO(your_api_key); //instantiate the class with the API key. 
+fio.setHTTPProxy(proxyhostname, proxyport);    //tell, which proxy to use
+```
+If proxyhostname equals the NullPointer, no proxy will be used.
+
 Currently, minutely, hourly, daily and flags classes are all initialized in the same way,
 with a ForecastIO class as an argument:
 
@@ -268,7 +279,7 @@ send me an <a href="mailto:david.dme@gmail.com">email</a>.<br>
 Documentation
 -------------
 I generated a javadoc based in the comments I made.
-It is included in the files under the javadoc/ folder but
+It is included in the files under the javadoc/ folder and here [forecastiolib.dme.ninja](http://forecastiolib.dme.ninja) but
 do not expect it to be best documentation ever.
 
 History
@@ -289,8 +300,3 @@ Contributors
 License
 -------
 The code is available under the terms of the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html).
-
-Last Update
------------
-18-11-2015
-

@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
@@ -31,6 +34,8 @@ public class ForecastIO {
 	private String X_Response_Time;
 	
 	private String rawResponse;
+	
+	private Proxy proxy_to_use;
 
 
 	public static final String UNITS_US = "us";
@@ -78,6 +83,8 @@ public class ForecastIO {
 			this.extend = false;
 			this.unitsURL = UNITS_AUTO;
 			this.langURL = LANG_ENGLISH;
+			this.proxy_to_use = null;
+			
 		}
 		else {
 			System.err.println("The API Key doesn't seam to be valid.");
@@ -100,6 +107,7 @@ public class ForecastIO {
 			this.extend = false;
 			this.unitsURL = UNITS_AUTO;
 			this.langURL = LANG_ENGLISH;
+			this.proxy_to_use = null;
 
 			getForecast(LATITUDE, LONGITUDE);
 		}
@@ -109,6 +117,32 @@ public class ForecastIO {
 
 	}//construtor - end
 
+	public ForecastIO(String LATITUDE, String LONGITUDE, String PROXYNAME, int PROXYPORT, String API_KEY){	
+
+		if (API_KEY.length()==32) {
+			this.ForecastIOApiKey = API_KEY;
+			this.forecast = new JsonObject();
+			this.currently = new JsonObject();
+			this.minutely = new JsonObject();
+			this.hourly = new JsonObject();
+			this.daily = new JsonObject();
+			this.flags = new JsonObject();
+			this.alerts = new JsonArray();
+			this.timeURL = null;
+			this.excludeURL = null;
+			this.extend = false;
+			this.unitsURL = UNITS_AUTO;
+			this.langURL = LANG_ENGLISH;
+			this.proxy_to_use = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXYNAME, PROXYPORT));
+
+			getForecast(LATITUDE, LONGITUDE);
+		}
+		else {
+			System.err.println("The API Key doesn't seam to be valid.");
+		}
+
+	}//construtor - end
+	
 	public ForecastIO(String LATITUDE, String LONGITUDE, String UNITS, String LANG, String API_KEY){	
 
 		if (API_KEY.length()==32) {
@@ -123,6 +157,31 @@ public class ForecastIO {
 			this.timeURL = null;
 			this.excludeURL = null;
 			this.extend = false;
+			this.proxy_to_use = null;
+			this.setUnits(UNITS);
+			this.setLang(LANG);
+			getForecast(LATITUDE, LONGITUDE);
+		} else {
+			System.err.println("The API Key doesn't seam to be valid.");
+		}
+
+	}//construtor - end
+	
+	public ForecastIO(String LATITUDE, String LONGITUDE, String UNITS, String LANG, String PROXYNAME, int PROXYPORT, String API_KEY){	
+
+		if (API_KEY.length()==32) {
+			this.ForecastIOApiKey = API_KEY;
+			this.forecast = new JsonObject();
+			this.currently = new JsonObject();
+			this.minutely = new JsonObject();
+			this.hourly = new JsonObject();
+			this.daily = new JsonObject();
+			this.flags = new JsonObject();
+			this.alerts = new JsonArray();
+			this.timeURL = null;
+			this.excludeURL = null;
+			this.extend = false;
+			this.proxy_to_use = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXYNAME, PROXYPORT));
 			this.setUnits(UNITS);
 			this.setLang(LANG);
 			getForecast(LATITUDE, LONGITUDE);
@@ -197,6 +256,20 @@ public class ForecastIO {
 	 */
 	public void setExcludeURL(String excludeURL) {
 		this.excludeURL = excludeURL;
+	}
+	
+	/**
+	 * Sets the http-proxy to use.
+	 * @param PROXYNAME hostname or ip of the proxy to use (e.g. "127.0.0.1"). If proxyname equals null, no proxy will be used.
+	 * @param PROXYPORT port of the proxy to use (e.g. 8080)
+	 */
+	public void setHTTPProxy(String PROXYNAME, int PROXYPORT) {
+		if (PROXYNAME == null) {
+			this.proxy_to_use = null;
+		}
+		else {
+			this.proxy_to_use = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXYNAME, PROXYPORT));
+		}
 	}
 
 	/**
@@ -467,7 +540,8 @@ public class ForecastIO {
 			String reply = httpGET( urlBuilder(LATITUDE, LONGITUDE) );
 			if(reply == null)
 				return false;
-			this.forecast = JsonObject.readFrom(reply);
+			this.forecast = Json.parse(reply).asObject();
+			//this.forecast = JsonObject.readFrom(reply);
 		} catch (NullPointerException e) {
 			System.err.println("Unable to connect to the API: "+e.getMessage());
 			return false;
@@ -495,8 +569,8 @@ public class ForecastIO {
 	 */
 
 	public boolean getForecast(String http_response) {
-
-		this.forecast = JsonObject.readFrom(http_response);
+		this.forecast = Json.parse(http_response).asObject();
+		//this.forecast = JsonObject.readFrom(http_response);
 		return getForecast(this.forecast);
 	}
 
@@ -610,8 +684,14 @@ public class ForecastIO {
 
 		try {
 			request = new URL(requestURL);
-			connection = (HttpURLConnection) request.openConnection();
-
+			// check, if a proxy was defined, if so, use it for the connection
+			if (this.proxy_to_use != null) {
+				connection = (HttpURLConnection) request.openConnection(this.proxy_to_use);
+			}
+			else {
+				connection = (HttpURLConnection) request.openConnection();
+			}
+			
 			connection.setRequestMethod("GET");
 			connection.setUseCaches(false);
 			connection.setDoInput(true);
